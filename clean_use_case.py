@@ -1,8 +1,8 @@
 import sqlite_micromigrator, sqlite3
 
 def migrate(cursor):
-    migrator = sqlite_micromigrator.Migrator()
-    @migrator.register
+    migrator = sqlite_micromigrator.Migrator(cursor)
+    @migrator
     def v0():
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS a (
@@ -10,15 +10,14 @@ def migrate(cursor):
             c TEXT
         );
         """)
-    @migrator.register
+    @migrator
     def v1():
         sqlite_micromigrator.add_column(cursor, "a", "d", "BLOB")
         sqlite_micromigrator.add_column(cursor, "a", "e", "BLOB")
-    @migrator.register
+    @migrator
     def v2():
         sqlite_micromigrator.drop_column(cursor, "a", "d")
         sqlite_micromigrator.drop_column(cursor, "a", "e")
-    migrator.migrate(cursor)
 
 def main():
     with sqlite3.connect(":memory:") as conn:

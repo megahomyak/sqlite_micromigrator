@@ -1,19 +1,16 @@
 class Migrator:
-    def __init__(self):
-        self.migrations = []
-    def register(self, migration):
-        self.migrations.append(migration)
-        return migration
-    def migrate(self, cursor):
-        while True:
-            cursor.execute("PRAGMA user_version;")
-            current_version = cursor.fetchone()[0]
-            try:
-                migration = self.migrations[current_version]
-            except IndexError:
-                break
+    def __init__(self, cursor):
+        self.cursor = cursor
+        cursor.execute("PRAGMA user_version;")
+        self.current_version = cursor.fetchone()[0]
+        self.migrations_processed = 0
+    def __call__(self, migration):
+        if self.current_version == self.migrations_processed:
             migration()
-            cursor.execute(f"PRAGMA user_version={current_version + 1};")
+            self.cursor.execute(f"PRAGMA user_version={self.current_version + 1};")
+            self.current_version += 1
+        self.migrations_processed += 1
+        return migration
 
 def add_column(cursor, table_name, column_name, column_type):
     cursor.execute(f"PRAGMA table_info({table_name});")

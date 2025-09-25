@@ -3,8 +3,8 @@ import sqlite_micromigrator, sqlite3
 class SuddenStop(Exception): pass
 
 def migrate(log, cursor, do_sudden_stop=False, do_v2=True):
-    migrator = sqlite_micromigrator.Migrator()
-    @migrator.register
+    migrator = sqlite_micromigrator.Migrator(cursor)
+    @migrator
     def v0():
         log.append("v0")
         cursor.execute("""
@@ -13,7 +13,7 @@ def migrate(log, cursor, do_sudden_stop=False, do_v2=True):
             c TEXT
         );
         """)
-    @migrator.register
+    @migrator
     def v1():
         log.append("v1")
         sqlite_micromigrator.add_column(cursor, "a", "d", "BLOB")
@@ -21,12 +21,11 @@ def migrate(log, cursor, do_sudden_stop=False, do_v2=True):
             raise SuddenStop()
         sqlite_micromigrator.add_column(cursor, "a", "e", "BLOB")
     if do_v2:
-        @migrator.register
+        @migrator
         def v2():
             log.append("v2")
             sqlite_micromigrator.drop_column(cursor, "a", "d")
             sqlite_micromigrator.drop_column(cursor, "a", "e")
-    migrator.migrate(cursor)
 
 def main():
     def assert_equal(a, b):
