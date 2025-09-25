@@ -49,6 +49,8 @@ def main():
             sqlite_micromigrator.migrate(cursor, make_migrate_version(log, do_sudden_stop=True))
         except SuddenStop:
             pass
+        else:
+            raise Exception("No sudden stop occured")
         assert_and_clear_log(["v0", "v1"])
         assert_column_names({"b", "c", "d"})
         sqlite_micromigrator.migrate(cursor, make_migrate_version(log, version_bound=2))
