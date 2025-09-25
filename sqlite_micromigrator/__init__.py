@@ -1,3 +1,20 @@
+class Migrator:
+    def __init__(self):
+        self.migrations = []
+    def register(self, migration):
+        self.migrations.append(migration)
+        return migration
+    def migrate(self, cursor):
+        while True:
+            cursor.execute("PRAGMA user_version;")
+            current_version = cursor.fetchone()[0]
+            try:
+                migration = self.migrations[current_version]
+            except IndexError:
+                break
+            migration()
+            cursor.execute(f"PRAGMA user_version={current_version + 1};")
+
 def add_column(cursor, table_name, column_name, column_type):
     cursor.execute(f"PRAGMA table_info({table_name});")
     column_names = [info_row[1] for info_row in cursor.fetchall()]
@@ -9,19 +26,3 @@ def drop_column(cursor, table_name, column_name):
     column_names = [info_row[1] for info_row in cursor.fetchall()]
     if column_name in column_names:
         cursor.execute(f"ALTER TABLE {table_name} DROP COLUMN {column_name};")
-
-class MigrationNotFound(Exception): pass
-
-def migrate(cursor, migrate_version):
-    def get_database_version():
-        cursor.execute("PRAGMA user_version;")
-        return cursor.fetchone()[0]
-    def set_database_version(new_version):
-        cursor.execute(f"PRAGMA user_version={new_version};")
-    try:
-        while True:
-            current_version = get_database_version()
-            migrate_version(cursor, current_version)
-            set_database_version(current_version + 1)
-    except MigrationNotFound:
-        pass
