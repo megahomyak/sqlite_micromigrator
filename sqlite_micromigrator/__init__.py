@@ -7,8 +7,8 @@ class Migrator:
     def __call__(self, migration):
         if self.current_version == self.migrations_processed:
             migration()
-            self.cursor.execute(f"PRAGMA user_version={self.current_version + 1};")
             self.current_version += 1
+            self.cursor.execute(f"PRAGMA user_version={self.current_version};")
         self.migrations_processed += 1
         return migration
 
