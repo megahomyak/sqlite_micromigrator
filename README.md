@@ -2,6 +2,10 @@ This is a super tiny SQLite database migrator, aimed to be used in the tiniest s
 
 Migrations done with this migrator, given they're done idempotently, can be stopped at any point. There are helper functions - `add_column` and `drop_column` - that help making adding and removing columns idempotent. Idempotent table creation can be done using `CREATE TABLE IF NOT EXISTS`, and idempotent table dropping can be done using `DROP TABLE IF EXISTS`.
 
+# Now on PyPI!
+
+`pip install sqlite_micromigrator`
+
 # Usage
 
 Before your main code, write this to be executed once:
