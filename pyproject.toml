@@ -1,0 +1,11 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sqlite_micromigrator"
+version = "0.2.0"
+description = "An SQLite migrator the tiniest and most embeddable I could make it"
+license = { file = "LICENSE.txt" }
+dependencies = []
+requires-python = ">=3.8"
