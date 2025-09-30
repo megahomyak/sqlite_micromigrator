@@ -1,14 +1,13 @@
 class Migrator:
     def __init__(self, cursor):
         self.cursor = cursor
-        cursor.execute("PRAGMA user_version;")
-        self.current_version = cursor.fetchone()[0]
         self.migrations_processed = 0
     def __call__(self, migration):
-        if self.current_version == self.migrations_processed:
+        self.cursor.execute("PRAGMA user_version;")
+        current_version = self.cursor.fetchone()[0]
+        if current_version == self.migrations_processed:
             migration()
-            self.current_version += 1
-            self.cursor.execute(f"PRAGMA user_version={self.current_version};")
+            self.cursor.execute(f"PRAGMA user_version={current_version + 1};")
         self.migrations_processed += 1
         return migration
 
