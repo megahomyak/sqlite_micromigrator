@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sqlite_micromigrator"
-version = "0.2.0"
+version = "0.2.1"
 description = "An SQLite migrator the tiniest and most embeddable I could make it"
 license = { file = "LICENSE.txt" }
 dependencies = []
